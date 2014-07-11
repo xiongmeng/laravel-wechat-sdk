@@ -1,4 +1,7 @@
 /vendor
+/public
+/tests
 composer.phar
 composer.lock
 .DS_Store
+phpunit.xml

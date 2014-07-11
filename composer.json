@@ -1,6 +1,8 @@
 {
     "name": "cooper/wechat",
-    "description": "",
+    "keywords": ["laravel", "weixin", "wechat"],
+    "license": "MIT",
+    "description": "Wechat SDK for Laravel 4",
     "authors": [
         {
             "name": "cooper",
