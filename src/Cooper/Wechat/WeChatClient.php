@@ -116,17 +116,43 @@ class WeChatClient {
 
     private static $ERROR_NO = 0;
 
-    public function __construct()
+    /**
+     * 构造函数 设置appid、appsecret
+     *
+     * @param string $appid
+     * @param string $appsecret
+     */
+    public function __construct($appid = '', $appsecret = '')
     {
-        $this->_appid     = Config::get('wechat::wechat.appId');
-        $this->_appsecret = Config::get('wechat::wechat.appSecret');
+        if ($appsecret && $appid)
+        {
+            $this->_appid     = $appid;
+            $this->_appsecret = $appsecret;
+        }
+        else
+        {
+            $this->_appid     = Config::get('wechat::wechat.appId');
+            $this->_appsecret = Config::get('wechat::wechat.appSecret');
+        }
     }
 
+    /**
+     * 处理错误信息
+     *
+     * @return int
+     */
     public static function error()
     {
         return self::$ERRCODE_MAP[self::$ERROR_NO] ? self::$ERRCODE_MAP[self::$ERROR_NO] : self::$ERROR_NO;
     }
 
+    /**
+     * 判断结果状态
+     *
+     * @param $res
+     *
+     * @return bool
+     */
     public static function checkIsSuc($res)
     {
         $result = TRUE;
@@ -146,6 +172,13 @@ class WeChatClient {
         return $result;
     }
 
+    /**
+     * 模拟GET
+     *
+     * @param $url
+     *
+     * @return string
+     */
     public static function get($url)
     {
         $ch = curl_init();
@@ -170,6 +203,14 @@ class WeChatClient {
         return $data;
     }
 
+    /**
+     * 模拟POST
+     *
+     * @param $url
+     * @param $data
+     *
+     * @return mixed|string
+     */
     private static function post($url, $data)
     {
         if (!function_exists('curl_init'))
@@ -197,6 +238,14 @@ class WeChatClient {
         return $data;
     }
 
+    /**
+     * 获取 AccessToken
+     *
+     * @param int $tokenOnly
+     * @param int $nocache
+     *
+     * @return array|null
+     */
     public function getAccessToken($tokenOnly = 1, $nocache = 0)
     {
         $myTokenInfo = NULL;
@@ -236,6 +285,11 @@ class WeChatClient {
         return $tokenOnly ? $myTokenInfo['token'] : $myTokenInfo;
     }
 
+    /**
+     * 设置 AccessToken
+     *
+     * @param $tokenInfo
+     */
     public function setAccessToken($tokenInfo)
     {
         if ($tokenInfo)
@@ -248,6 +302,15 @@ class WeChatClient {
         }
     }
 
+    /**
+     * 上传 media
+     *
+     * @param     $type
+     * @param     $file_path
+     * @param int $mediaidOnly
+     *
+     * @return mixed|null
+     */
     public function upload($type, $file_path, $mediaidOnly = 1)
     {
         $access_token = $this->getAccessToken();
@@ -264,6 +327,13 @@ class WeChatClient {
         return NULL;
     }
 
+    /**
+     * 下载 media
+     *
+     * @param $mid
+     *
+     * @return string
+     */
     public function download($mid)
     {
         $access_token = $this->getAccessToken();
@@ -272,6 +342,11 @@ class WeChatClient {
         return self::get($url);
     }
 
+    /**
+     * 获取菜单
+     *
+     * @return mixed|null
+     */
     public function getMenu()
     {
         $access_token = $this->getAccessToken();
@@ -288,6 +363,11 @@ class WeChatClient {
         return NULL;
     }
 
+    /**
+     * 删除菜单
+     *
+     * @return bool
+     */
     public function deleteMenu()
     {
         $access_token = $this->getAccessToken();
@@ -298,6 +378,13 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
+    /**
+     * 设置菜单
+     *
+     * @param $myMenu
+     *
+     * @return bool
+     */
     public function setMenu($myMenu)
     {
         $access_token = $this->getAccessToken();
@@ -318,6 +405,15 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
+    /**
+     * 发送信息
+     *
+     * @param $to
+     * @param $type
+     * @param $data
+     *
+     * @return bool
+     */
     private function _send($to, $type, $data)
     {
         $access_token = $this->getAccessToken();
@@ -336,21 +432,55 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
+    /**
+     * 推送文本消息
+     *
+     * @param $to
+     * @param $msg
+     *
+     * @return bool
+     */
     public function sendTextMsg($to, $msg)
     {
         return $this->_send($to, 'text', array('content' => $msg));
     }
 
+    /**
+     * 推送图片消息
+     *
+     * @param $to
+     * @param $mid
+     *
+     * @return bool
+     */
     public function sendImgMsg($to, $mid)
     {
         return $this->_send($to, 'image', array('media_id' => $mid));
     }
 
+    /**
+     * 推送音频消息
+     *
+     * @param $to
+     * @param $mid
+     *
+     * @return bool
+     */
     public function sendVoice($to, $mid)
     {
         return $this->_send($to, 'voice', array('media_id' => $mid));
     }
 
+    /**
+     * 推送视频消息
+     *
+     * @param $to
+     * @param $mid
+     * @param $title
+     * @param $desc
+     *
+     * @return bool
+     */
     public function sendVideo($to, $mid, $title, $desc)
     {
         return $this->_send($to, 'video', array(
@@ -360,6 +490,19 @@ class WeChatClient {
         ));
     }
 
+    /**
+     * 推送音乐
+     *
+     * @param        $to
+     * @param        $url
+     * @param        $mid
+     * @param        $thumb_mid
+     * @param        $title
+     * @param string $desc
+     * @param string $hq_url
+     *
+     * @return bool
+     */
     public function sendMusic($to, $url, $mid, $thumb_mid, $title, $desc = '', $hq_url = '')
     {
         return $this->_send($to, 'music', array(
@@ -372,6 +515,13 @@ class WeChatClient {
         ));
     }
 
+    /**
+     * 图文数据数组
+     *
+     * @param $articles
+     *
+     * @return array
+     */
     static private function _filterForRichMsg($articles)
     {
         $i      = 0;
@@ -398,6 +548,14 @@ class WeChatClient {
         return $result;
     }
 
+    /**
+     * 图文消息
+     *
+     * @param $to
+     * @param $articles
+     *
+     * @return bool
+     */
     public function sendRichMsg($to, $articles)
     {
         return $this->_send($to, 'news', array(
@@ -405,6 +563,13 @@ class WeChatClient {
         ));
     }
 
+    /**
+     * 创建用户组
+     *
+     * @param $name
+     *
+     * @return null
+     */
     public function createGroup($name)
     {
         $access_token = $this->getAccessToken();
@@ -419,6 +584,14 @@ class WeChatClient {
         return self::checkIsSuc($res) ? $res['group']['id'] : NULL;
     }
 
+    /**
+     * 根据用户组ID重命名用户组
+     *
+     * @param $gid
+     * @param $name
+     *
+     * @return bool
+     */
     public function renameGroup($gid, $name)
     {
         $access_token = $this->getAccessToken();
@@ -436,6 +609,14 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
+    /**
+     * 根据OpenID删除用户
+     *
+     * @param $uid
+     * @param $gid
+     *
+     * @return bool
+     */
     public function moveUserById($uid, $gid)
     {
         $access_token = $this->getAccessToken();
@@ -455,6 +636,11 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
+    /**
+     * 获取所有用户组
+     *
+     * @return null
+     */
     public function getAllGroups()
     {
         $access_token = $this->getAccessToken();
@@ -467,6 +653,13 @@ class WeChatClient {
         return self::checkIsSuc($res) ? $res['groups'] : NULL;
     }
 
+    /**
+     * 根据用户OpenID 获取用户组
+     *
+     * @param $uid
+     *
+     * @return null
+     */
     public function getGroupidByUserid($uid)
     {
         $access_token = $this->getAccessToken();
@@ -481,6 +674,14 @@ class WeChatClient {
         return self::checkIsSuc($res) ? $res['groupid'] : NULL;
     }
 
+    /**
+     * 根据用户ID 获取用户信息
+     *
+     * @param        $uid
+     * @param string $lang
+     *
+     * @return mixed|null
+     */
     public function getUserInfoById($uid, $lang = '')
     {
         if (!$lang)
@@ -495,6 +696,13 @@ class WeChatClient {
         return self::checkIsSuc($res) ? $res : NULL;
     }
 
+    /**
+     * 获取关注用户列表，支持分页
+     *
+     * @param string $next_id
+     *
+     * @return array|null
+     */
     public function getFollowersList($next_id = '')
     {
         $access_token = $this->getAccessToken();
@@ -516,6 +724,15 @@ class WeChatClient {
         ) : NULL;
     }
 
+    /**
+     * 获取转跳网址
+     *
+     * @param        $redirect_uri
+     * @param string $state
+     * @param string $scope
+     *
+     * @return string
+     */
     public function getOAuthConnectUri($redirect_uri, $state = '', $scope = 'snsapi_base')
     {
         $redirect_uri = urlencode($redirect_uri);
@@ -524,6 +741,13 @@ class WeChatClient {
         return $url;
     }
 
+    /**
+     * 根据 code 获取 AccessToken
+     *
+     * @param $code
+     *
+     * @return mixed
+     */
     public function getAccessTokenByCode($code)
     {
         $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={$this->_appid}&secret={$this->_appsecret}&code=$code&grant_type=authorization_code";
@@ -532,6 +756,13 @@ class WeChatClient {
         return $res;
     }
 
+    /**
+     * 刷新AccessTocken
+     *
+     * @param $refresh_token
+     *
+     * @return mixed
+     */
     public function refreshAccessTocken($refresh_token)
     {
         $url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid={$this->_appid}&grant_type=refresh_token&refresh_token=$refresh_token";
@@ -540,6 +771,15 @@ class WeChatClient {
         return $res;
     }
 
+    /**
+     * 根据AccessTocken获取用户信息
+     *
+     * @param        $access_token
+     * @param        $openid
+     * @param string $lang
+     *
+     * @return mixed
+     */
     public function getUserInfoByAuth($access_token, $openid, $lang = 'zh_CN')
     {
         $url = "https://api.weixin.qq.com/sns/userinfo?access_token=$access_token&openid=$openid&lang=$lang";
@@ -548,11 +788,25 @@ class WeChatClient {
         return $res;
     }
 
+    /**
+     * 获取二维码
+     *
+     * @param $ticket
+     *
+     * @return string
+     */
     public static function getQrcodeImgByTicket($ticket)
     {
         return self::get(self::getQrcodeImgUrlByTicket($ticket));
     }
 
+    /**
+     * URL获取二维码
+     *
+     * @param $ticket
+     *
+     * @return string
+     */
     public static function getQrcodeImgUrlByTicket($ticket)
     {
         $ticket = urlencode($ticket);
@@ -560,6 +814,13 @@ class WeChatClient {
         return self::$_URL_QR_ROOT . "/cgi-bin/showqrcode?ticket=$ticket";
     }
 
+    /**
+     * 二维码
+     *
+     * @param array $options
+     *
+     * @return array|null
+     */
     public function getQrcodeTicket($options = array())
     {
         $access_token = $this->getAccessToken();
