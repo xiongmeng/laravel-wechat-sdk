@@ -41,9 +41,16 @@ class WeChatServer {
     /**
      * 构造函数
      */
-    public function __construct()
+    public function __construct($token = '')
     {
-        $this->_token = Config::get('wechat::wechat.Token');
+        if ($token)
+        {
+            $this->_token = $token;
+        }
+        else
+        {
+            $this->_token = Config::get('wechat::wechat.Token');
+        }
 
         $this->accessDataPush();
     }
