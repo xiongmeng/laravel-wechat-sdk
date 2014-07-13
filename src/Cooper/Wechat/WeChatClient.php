@@ -179,7 +179,7 @@ class WeChatClient {
      *
      * @return string
      */
-    public static function get($url)
+    private static function get($url)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
