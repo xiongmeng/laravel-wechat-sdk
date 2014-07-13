@@ -303,7 +303,7 @@ class WeChatClient {
     }
 
     /**
-     * 上传 media
+     * 上传多媒体文件
      *
      * @param     $type
      * @param     $file_path
@@ -328,7 +328,7 @@ class WeChatClient {
     }
 
     /**
-     * 下载 media
+     * 下载多媒体文件
      *
      * @param $mid
      *
@@ -343,7 +343,7 @@ class WeChatClient {
     }
 
     /**
-     * 获取菜单
+     * 获取自定义菜单
      *
      * @return mixed|null
      */
@@ -364,7 +364,7 @@ class WeChatClient {
     }
 
     /**
-     * 删除菜单
+     * 删除自定义菜单
      *
      * @return bool
      */
@@ -379,7 +379,7 @@ class WeChatClient {
     }
 
     /**
-     * 设置菜单
+     * 设置自定义菜单
      *
      * @param $myMenu
      *
@@ -433,7 +433,7 @@ class WeChatClient {
     }
 
     /**
-     * 推送文本消息
+     * 发送文本消息（发送客服消息）
      *
      * @param $to
      * @param $msg
@@ -446,7 +446,7 @@ class WeChatClient {
     }
 
     /**
-     * 推送图片消息
+     * 发送图片消息（发送客服消息）
      *
      * @param $to
      * @param $mid
@@ -459,7 +459,7 @@ class WeChatClient {
     }
 
     /**
-     * 推送音频消息
+     * 发送语音消息（发送客服消息）
      *
      * @param $to
      * @param $mid
@@ -472,7 +472,7 @@ class WeChatClient {
     }
 
     /**
-     * 推送视频消息
+     * 发送视频消息（发送客服消息）
      *
      * @param $to
      * @param $mid
@@ -491,7 +491,7 @@ class WeChatClient {
     }
 
     /**
-     * 推送音乐
+     * 发送音乐消息（发送客服消息）
      *
      * @param        $to
      * @param        $url
@@ -549,7 +549,7 @@ class WeChatClient {
     }
 
     /**
-     * 图文消息
+     * 发送图文消息（发送客服消息）
      *
      * @param $to
      * @param $articles
@@ -564,7 +564,7 @@ class WeChatClient {
     }
 
     /**
-     * 创建用户组
+     * 创建分组
      *
      * @param $name
      *
@@ -585,7 +585,7 @@ class WeChatClient {
     }
 
     /**
-     * 根据用户组ID重命名用户组
+     * 修改分组名
      *
      * @param $gid
      * @param $name
@@ -609,8 +609,26 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
+
     /**
-     * 根据OpenID删除用户
+     * 查询所有分组
+     *
+     * @return null
+     */
+    public function getAllGroups()
+    {
+        $access_token = $this->getAccessToken();
+        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/get?access_token=$access_token";
+
+        $res = self::get($url);
+        echo $res;
+        $res = json_decode($res, TRUE);
+
+        return self::checkIsSuc($res) ? $res['groups'] : NULL;
+    }
+
+    /**
+     * 移动用户分组
      *
      * @param $uid
      * @param $gid
@@ -637,24 +655,7 @@ class WeChatClient {
     }
 
     /**
-     * 获取所有用户组
-     *
-     * @return null
-     */
-    public function getAllGroups()
-    {
-        $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/get?access_token=$access_token";
-
-        $res = self::get($url);
-        echo $res;
-        $res = json_decode($res, TRUE);
-
-        return self::checkIsSuc($res) ? $res['groups'] : NULL;
-    }
-
-    /**
-     * 根据用户OpenID 获取用户组
+     * 查询用户所在分组 通过用户的OpenID查询其所在的GroupID。
      *
      * @param $uid
      *
@@ -675,7 +676,7 @@ class WeChatClient {
     }
 
     /**
-     * 根据用户ID 获取用户信息
+     * 根据用户ID 获取用户基本信息
      *
      * @param        $uid
      * @param string $lang
@@ -697,7 +698,7 @@ class WeChatClient {
     }
 
     /**
-     * 获取关注用户列表，支持分页
+     * 获取关注者列表
      *
      * @param string $next_id
      *
@@ -724,8 +725,9 @@ class WeChatClient {
         ) : NULL;
     }
 
+
     /**
-     * 获取转跳网址
+     * 1、用户同意授权，获取code。
      *
      * @param        $redirect_uri
      * @param string $state
@@ -742,7 +744,7 @@ class WeChatClient {
     }
 
     /**
-     * 根据 code 获取 AccessToken
+     * 2、通过code换取网页授权access_token
      *
      * @param $code
      *
@@ -757,7 +759,7 @@ class WeChatClient {
     }
 
     /**
-     * 刷新AccessTocken
+     * 3、刷新access_token（如果需要）
      *
      * @param $refresh_token
      *
@@ -772,7 +774,7 @@ class WeChatClient {
     }
 
     /**
-     * 根据AccessTocken获取用户信息
+     * 4、拉取用户信息(需scope为 snsapi_userinfo)
      *
      * @param        $access_token
      * @param        $openid
@@ -801,7 +803,7 @@ class WeChatClient {
     }
 
     /**
-     * URL获取二维码
+     * 通过ticket换取二维码
      *
      * @param $ticket
      *
@@ -815,7 +817,7 @@ class WeChatClient {
     }
 
     /**
-     * 二维码
+     * 创建二维码ticket
      *
      * @param array $options
      *

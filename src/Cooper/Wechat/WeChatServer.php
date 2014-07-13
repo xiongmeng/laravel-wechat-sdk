@@ -225,7 +225,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 图片模板
+     * 获取文本消息XML
      *
      * @param $txt
      *
@@ -240,7 +240,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 图片模板
+     * 获取图片消息XML
      *
      * @param $mid
      *
@@ -257,7 +257,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 音频模板
+     * 获取音频消息XML
      *
      * @param $mid
      *
@@ -274,7 +274,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 视频模板
+     * 获取视频消息XML
      *
      * @param        $mid
      * @param        $title
@@ -296,7 +296,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 音乐模板
+     * 获取音乐消息XML
      *
      * @param        $url
      * @param        $thumbmid
@@ -321,7 +321,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 图文模板
+     * 获取图文消息XML
      *
      * @param $list
      *
@@ -356,7 +356,7 @@ class WeChatServer {
     }
 
     /**
-     * XML 基础模板
+     * XML基础模板
      *
      * @param $nodes
      *

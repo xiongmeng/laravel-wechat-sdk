@@ -32,13 +32,49 @@ todo
 
 ##类（说明）
 
-###WeChatServer
+###WeChatServer 主要实现的是“被动”接收消息和处理功能，如被动接收文本消息及回复，被动接收语音消息及回复等。
 
-todo
+* getMessage 获取微信推送过来消息数据
+* getXml4Txt (静态方法)获取文字消息XML
+* getXml4ImgByMid (静态方法)获取图片消息XML
+* getXml4VoiceByMid (静态方法)获取音频消息XML
+* getXml4VideoByMid (静态方法)获取视频消息XML
+* getXml4MusicByUrl (静态方法)获取音乐消息XML
+* getXml4RichMsgByArray (静态方法)获取图文消息XML
 
-###WeChatClient
 
-todo
+###WeChatClient 主要实现的是“主动”请求功能，如发送客服消息，群发消息，创建菜单，创建二维码等。
+
+* error (静态方法)返回错误信息对应的描述
+* checkIsSuc (静态方法)判断结果状态
+* getAccessToken 获取AccessToken
+* setAccessToken 设置AccessToken
+* upload 上传多媒体文件
+* download 下载多媒体文件
+* getMenu 获取自定义菜单
+* deleteMenu 删除自定义菜单
+* setMenu 设置自定义菜单
+* sendTextMsg 发送文本消息（发送客服消息）
+* sendImgMsg 发送图片消息（发送客服消息）
+* sendVoice 发送语音消息（发送客服消息）
+* sendVideo 发送视频消息（发送客服消息）
+* sendMusic 发送音乐消息（发送客服消息）
+* sendRichMsg 发送图文消息（发送客服消息）
+* createGroup 创建分组
+* renameGroup 修改分组名
+* getAllGroups 查询所有分组
+* moveUserById 移动用户分组
+* getGroupidByUserid 查询用户所在分组
+* getUserInfoById 获取用户基本信息
+* getFollowersList 获取关注者列表
+
+* getOAuthConnectUri 1、用户同意授权，获取code
+* getAccessTokenByCode 2、通过code换取网页授权access_token
+* refreshAccessTocken 3、刷新access_token（如果需要）
+* getUserInfoByAuth 4、拉取用户信息(需scope为 snsapi_userinfo)
+
+* getQrcodeImgByTicket 通过ticket换取二维码
+* getQrcodeImgUrlByTicket 创建二维码ticket
 
 
 ##License
