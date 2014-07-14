@@ -609,7 +609,6 @@ class WeChatClient {
         return self::checkIsSuc($res);
     }
 
-
     /**
      * 查询所有分组
      *
@@ -724,7 +723,6 @@ class WeChatClient {
             'next_id' => isset($res['next_openid']) ? $res['next_openid'] : NULL
         ) : NULL;
     }
-
 
     /**
      * 1、用户同意授权，获取code。

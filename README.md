@@ -90,21 +90,29 @@
 * getUserInfoById 获取用户基本信息
 * getFollowersList 获取关注者列表
 
-网页授权获取用户基本信息
+网页授权获取用户基本信息（顺序执行）
 
-* getOAuthConnectUri 1、用户同意授权，获取code
-* getAccessTokenByCode 2、通过code换取网页授权access_token
-* refreshAccessTocken 3、刷新access_token（如果需要）
-* getUserInfoByAuth 4、拉取用户信息(需scope为 snsapi_userinfo)
+* getOAuthConnectUri 用户同意授权，获取code
+* getAccessTokenByCode 通过code换取网页授权access_token
+* refreshAccessTocken 刷新access_token（如果需要）
+* getUserInfoByAuth 拉取用户信息(需scope为 snsapi_userinfo)
 
 生成带参数的二维码
 
 * getQrcodeImgByTicket 通过ticket换取二维码
 * getQrcodeTicket 创建二维码ticket
+ 
+##4、测试
 
-##4、环境
+安装 Chrome 插件
+
+[Postman - REST Client](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm)
+
+Url后面添加  `debug=true` 即可跳过验证。
+
+##5、环境
 PHP >= 5.4  
 Laravel >= 4.2 
 
-##5、License
+##6、License
 This is free software distributed under the terms of the MIT license
