@@ -111,11 +111,13 @@ class WeChatServer {
             'type'     => (string)$MsgType
         );
 
+
+
         // 消息ID
         //
         if (property_exists($postObj, 'MsgId'))
         {
-            $result['id'] = $postObj->MsgId;
+            $result['id'] = (int)$postObj->MsgId;
         }
 
         // 消息类型
