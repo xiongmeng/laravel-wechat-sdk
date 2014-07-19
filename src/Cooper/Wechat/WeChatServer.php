@@ -111,8 +111,6 @@ class WeChatServer {
             'type'     => (string)$MsgType
         );
 
-
-
         // 消息ID
         //
         if (property_exists($postObj, 'MsgId'))

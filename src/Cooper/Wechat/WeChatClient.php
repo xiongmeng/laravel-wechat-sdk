@@ -279,7 +279,7 @@ class WeChatClient {
                 'expiration' => time() + (int)$res['expires_in']
             );
 
-            Cache::put($cachename, $myTokenInfo);
+            Cache::put($cachename, $myTokenInfo, ((int)$res['expires_in'] / 60));
         }
 
         return $tokenOnly ? $myTokenInfo['token'] : $myTokenInfo;
@@ -620,7 +620,7 @@ class WeChatClient {
         $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/get?access_token=$access_token";
 
         $res = self::get($url);
-        echo $res;
+        // echo $res;
         $res = json_decode($res, TRUE);
 
         return self::checkIsSuc($res) ? $res['groups'] : NULL;
