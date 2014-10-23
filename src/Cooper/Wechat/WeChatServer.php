@@ -165,7 +165,7 @@ class WeChatServer {
 
                     case 'subscribe':
                     case 'scan':
-                        if (property_exists($postObj, EventKey))
+                        if (property_exists($postObj, 'EventKey'))
                         {
                             $result['key']    = str_replace(
                                 'qrscene_', '', (string)$postObj->EventKey
