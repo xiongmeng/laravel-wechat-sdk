@@ -200,6 +200,9 @@ class WeChatClient {
         }
         curl_close($ch);
 
+//        if(class_exists('\Log')){
+//            \Log::info('wechat_request_get', array('url' => $url, 'response' => $data));
+//        }
         return $data;
     }
 
@@ -863,5 +866,28 @@ class WeChatClient {
         }
 
         return NULL;
+    }
+
+    /**
+     * 获取所有上架商品
+     */
+    public function getOnlineProduct(){
+        $access_token = $this->getAccessToken();
+        $url          = self::$_URL_API_ROOT . "/merchant/getbystatus?access_token=$access_token";
+
+        $json = json_encode(
+            array(
+                'status'  => 1
+            )
+        );
+
+        $res = self::post($url, $json);
+
+        $res = json_decode($res, true);
+        if($this->checkIsSuc($res)){
+            return $res['products_info'];
+        }else{
+            throw new \Exception(self::$ERROR_NO, $this->error());
+        }
     }
 }
