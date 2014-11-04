@@ -188,6 +188,7 @@ class WeChatClient {
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
 
         if (!curl_exec($ch))
         {
@@ -228,6 +229,7 @@ class WeChatClient {
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
 
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -887,7 +889,7 @@ class WeChatClient {
         if($this->checkIsSuc($res)){
             return $res['products_info'];
         }else{
-            throw new \Exception(self::$ERROR_NO, $this->error());
+            throw new \Exception($this->error(), self::$ERROR_NO);
         }
     }
 }
