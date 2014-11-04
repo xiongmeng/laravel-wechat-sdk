@@ -188,7 +188,7 @@ class WeChatClient {
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 1);
 
         if (!curl_exec($ch))
         {
@@ -229,7 +229,7 @@ class WeChatClient {
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 1);
 
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
