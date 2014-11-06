@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Cache as Cache;
  *
  * @package Cooper\Wechat
  */
-class WeChatClient {
+class WeChatClient
+{
 
     public static $_URL_API_ROOT = 'https://api.weixin.qq.com';
 
@@ -20,8 +21,8 @@ class WeChatClient {
     public static $_QRCODE_TICKET_DEFAULT_ID = 1;
 
     public static $ERRCODE_MAP = array(
-        '-1'    => '&#x7CFB;&#x7EDF;&#x7E41;&#x5FD9;',
-        '0'     => '&#x8BF7;&#x6C42;&#x6210;&#x529F;',
+        '-1' => '&#x7CFB;&#x7EDF;&#x7E41;&#x5FD9;',
+        '0' => '&#x8BF7;&#x6C42;&#x6210;&#x529F;',
         '40001' => '&#x83B7;&#x53D6;access_token&#x65F6;AppSecret&#x9519;&#x8BEF;&#xFF0C;&#x6216;&#x8005;access_token&#x65E0;&#x6548;',
         '40002' => '&#x4E0D;&#x5408;&#x6CD5;&#x7684;&#x51ED;&#x8BC1;&#x7C7B;&#x578B;',
         '40003' => '&#x4E0D;&#x5408;&#x6CD5;&#x7684;OpenID',
@@ -124,14 +125,11 @@ class WeChatClient {
      */
     public function __construct($appid = '', $appsecret = '')
     {
-        if ($appsecret && $appid)
-        {
-            $this->_appid     = $appid;
+        if ($appsecret && $appid) {
+            $this->_appid = $appid;
             $this->_appsecret = $appsecret;
-        }
-        else
-        {
-            $this->_appid     = Config::get('wechat::wechat.appId');
+        } else {
+            $this->_appid = Config::get('wechat::wechat.appId');
             $this->_appsecret = Config::get('wechat::wechat.appSecret');
         }
     }
@@ -157,15 +155,13 @@ class WeChatClient {
     {
         $result = TRUE;
 
-        if (is_string($res))
-        {
+        if (is_string($res)) {
             $res = json_decode($res, TRUE);
         }
 
-        if (isset($res['errcode']) && (0 !== (int)$res['errcode']))
-        {
+        if (isset($res['errcode']) && (0 !== (int)$res['errcode'])) {
             array_push(self::$ERROR_LOGS, $res);
-            $result         = FALSE;
+            $result = FALSE;
             self::$ERROR_NO = $res['errcode'];
         }
 
@@ -190,13 +186,10 @@ class WeChatClient {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_SSLVERSION, 1);
 
-        if (!curl_exec($ch))
-        {
+        if (!curl_exec($ch)) {
             error_log(curl_error($ch));
             $data = '';
-        }
-        else
-        {
+        } else {
             $data = curl_multi_getcontent($ch);
         }
         curl_close($ch);
@@ -217,8 +210,7 @@ class WeChatClient {
      */
     private static function post($url, $data)
     {
-        if (!function_exists('curl_init'))
-        {
+        if (!function_exists('curl_init')) {
             return '';
         }
 
@@ -234,8 +226,7 @@ class WeChatClient {
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         $data = curl_exec($ch);
-        if (!$data)
-        {
+        if (!$data) {
             error_log(curl_error($ch));
         }
         curl_close($ch);
@@ -254,20 +245,17 @@ class WeChatClient {
     public function getAccessToken($tokenOnly = 1, $nocache = 0)
     {
         $myTokenInfo = NULL;
-        $appid       = $this->_appid;
-        $appsecret   = $this->_appsecret;
-        $cachename   = 'wechatat_' . $appid;
+        $appid = $this->_appid;
+        $appsecret = $this->_appsecret;
+        $cachename = 'wechatat_' . $appid;
 
-        if ($nocache || empty(self::$_accessTokenCache[$appid]))
-        {
+        if ($nocache || empty(self::$_accessTokenCache[$appid])) {
             self::$_accessTokenCache[$appid] = Cache::get($cachename);
         }
 
-        if (!empty(self::$_accessTokenCache[$appid]))
-        {
+        if (!empty(self::$_accessTokenCache[$appid])) {
             $myTokenInfo = self::$_accessTokenCache[$appid];
-            if (time() < $myTokenInfo['expiration'])
-            {
+            if (time() < $myTokenInfo['expiration']) {
                 return $tokenOnly ? $myTokenInfo['token'] : $myTokenInfo;
             }
         }
@@ -275,12 +263,11 @@ class WeChatClient {
         $url = self::$_URL_API_ROOT . "/cgi-bin/token?grant_type=client_credential&appid=$appid&secret=$appsecret";
 
         $json = self::get($url);
-        $res  = json_decode($json, TRUE);
+        $res = json_decode($json, TRUE);
 
-        if (self::checkIsSuc($res))
-        {
+        if (self::checkIsSuc($res)) {
             self::$_accessTokenCache[$appid] = $myTokenInfo = array(
-                'token'      => $res['access_token'],
+                'token' => $res['access_token'],
                 'expiration' => time() + (int)$res['expires_in']
             );
 
@@ -297,11 +284,10 @@ class WeChatClient {
      */
     public function setAccessToken($tokenInfo)
     {
-        if ($tokenInfo)
-        {
-            $appid                           = $this->_appid;
+        if ($tokenInfo) {
+            $appid = $this->_appid;
             self::$_accessTokenCache[$appid] = array(
-                'token'  => $tokenInfo['token'],
+                'token' => $tokenInfo['token'],
                 'expire' => $tokenInfo['expire']
             );
         }
@@ -319,13 +305,12 @@ class WeChatClient {
     public function upload($type, $file_path, $mediaidOnly = 1)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_FILE_API_ROOT . "/cgi-bin/media/upload?access_token=$access_token&type=$type";
+        $url = self::$_URL_FILE_API_ROOT . "/cgi-bin/media/upload?access_token=$access_token&type=$type";
 
         $res = self::post($url, array('media' => "@$file_path"));
         $res = json_decode($res, TRUE);
 
-        if (self::checkIsSuc($res))
-        {
+        if (self::checkIsSuc($res)) {
             return $mediaidOnly ? $res['media_id'] : $res;
         }
 
@@ -342,7 +327,7 @@ class WeChatClient {
     public function download($mid)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_FILE_API_ROOT . "/cgi-bin/media/get?access_token=$access_token&media_id=$mid";
+        $url = self::$_URL_FILE_API_ROOT . "/cgi-bin/media/get?access_token=$access_token&media_id=$mid";
 
         return self::get($url);
     }
@@ -355,13 +340,12 @@ class WeChatClient {
     public function getMenu()
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/menu/get?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/menu/get?access_token=$access_token";
 
         $json = self::get($url);
 
         $res = json_decode($json, TRUE);
-        if (self::checkIsSuc($res))
-        {
+        if (self::checkIsSuc($res)) {
             return $res;
         }
 
@@ -376,7 +360,7 @@ class WeChatClient {
     public function deleteMenu()
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/menu/delete?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/menu/delete?access_token=$access_token";
 
         $res = self::get($url);
 
@@ -393,19 +377,16 @@ class WeChatClient {
     public function setMenu($myMenu)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/menu/create?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/menu/create?access_token=$access_token";
 
-        if (defined('JSON_UNESCAPED_UNICODE'))
-        {
+        if (defined('JSON_UNESCAPED_UNICODE')) {
             $json = is_string($myMenu) ? $myMenu : json_encode($myMenu, JSON_UNESCAPED_UNICODE);
-        }
-        else
-        {
+        } else {
             $json = is_string($myMenu) ? $myMenu : json_encode($myMenu);
         }
 
         $json = urldecode($json);
-        $res  = self::post($url, $json);
+        $res = self::post($url, $json);
 
         return self::checkIsSuc($res);
     }
@@ -422,15 +403,14 @@ class WeChatClient {
     private function _send($to, $type, $data)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/message/custom/send?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/message/custom/send?access_token=$access_token";
 
         $json = json_encode(
             array(
-                'touser'  => $to,
+                'touser' => $to,
                 'msgtype' => $type,
-                $type     => $data
-            )
-        );
+                $type => $data
+            ), JSON_UNESCAPED_UNICODE);
 
         $res = self::post($url, $json);
 
@@ -489,8 +469,8 @@ class WeChatClient {
     public function sendVideo($to, $mid, $title, $desc)
     {
         return $this->_send($to, 'video', array(
-            'media_id'    => $mid,
-            'title'       => $title,
+            'media_id' => $mid,
+            'title' => $title,
             'description' => $desc
         ));
     }
@@ -511,12 +491,12 @@ class WeChatClient {
     public function sendMusic($to, $url, $mid, $thumb_mid, $title, $desc = '', $hq_url = '')
     {
         return $this->_send($to, 'music', array(
-            'media_id'       => $mid,
-            'title'          => $title,
-            'description'    => $desc || $title,
-            'musicurl'       => $url,
+            'media_id' => $mid,
+            'title' => $title,
+            'description' => $desc || $title,
+            'musicurl' => $url,
             'thumb_media_id' => $thumb_mid,
-            'hqmusicurl'     => $hq_url || $url
+            'hqmusicurl' => $hq_url || $url
         ));
     }
 
@@ -529,23 +509,19 @@ class WeChatClient {
      */
     static private function _filterForRichMsg($articles)
     {
-        $i      = 0;
-        $ii     = len($articles);
+        $i = 0;
+        $ii = len($articles);
         $result = array();
-        while ($i < $ii)
-        {
+        while ($i < $ii) {
             $currentArticle = $articles[$i++];
-            try
-            {
+            try {
                 array_push($result, array(
-                    'title'       => $currentArticle['title'],
+                    'title' => $currentArticle['title'],
                     'description' => $currentArticle['desc'],
-                    'url'         => $currentArticle['url'],
-                    'picurl'      => $currentArticle['thumb_url']
+                    'url' => $currentArticle['url'],
+                    'picurl' => $currentArticle['thumb_url']
                 ));
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
 
             }
         }
@@ -578,7 +554,7 @@ class WeChatClient {
     public function createGroup($name)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/create?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/groups/create?access_token=$access_token";
 
         $res = self::post($url, json_encode(array(
             'group' => array('name' => $name)
@@ -600,11 +576,11 @@ class WeChatClient {
     public function renameGroup($gid, $name)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/update?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/groups/update?access_token=$access_token";
 
         $res = self::post($url, json_encode(array(
             'group' => array(
-                'id'   => $gid,
+                'id' => $gid,
                 'name' => $name
             )
         )));
@@ -622,7 +598,7 @@ class WeChatClient {
     public function getAllGroups()
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/get?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/groups/get?access_token=$access_token";
 
         $res = self::get($url);
         // echo $res;
@@ -642,12 +618,12 @@ class WeChatClient {
     public function moveUserById($uid, $gid)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/members/update?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/groups/members/update?access_token=$access_token";
 
         $res = self::post(
             $url, json_encode(
                 array(
-                    'openid'     => $uid,
+                    'openid' => $uid,
                     'to_groupid' => $gid
                 )
             )
@@ -668,7 +644,7 @@ class WeChatClient {
     public function getGroupidByUserid($uid)
     {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/groups/getid?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/groups/getid?access_token=$access_token";
 
         $res = self::post($url, json_encode(array(
             'openid' => $uid
@@ -689,12 +665,11 @@ class WeChatClient {
      */
     public function getUserInfoById($uid, $lang = '')
     {
-        if (!$lang)
-        {
+        if (!$lang) {
             $lang = self::$_USERINFO_LANG;
         }
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/user/info?access_token=$access_token&openid=$uid&lang=$lang";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/user/info?access_token=$access_token&openid=$uid&lang=$lang";
 
         $res = json_decode(self::get($url), TRUE);
 
@@ -711,9 +686,8 @@ class WeChatClient {
     public function getFollowersList($next_id = '')
     {
         $access_token = $this->getAccessToken();
-        $extend       = '';
-        if ($next_id)
-        {
+        $extend = '';
+        if ($next_id) {
             $extend = "&next_openid=$next_id";
         }
         $url = self::$_URL_API_ROOT . "/cgi-bin/user/get?access_token=${access_token}$extend";
@@ -723,8 +697,8 @@ class WeChatClient {
         );
 
         return self::checkIsSuc($res) ? array(
-            'total'   => $res['total'],
-            'list'    => $res['data']['openid'],
+            'total' => $res['total'],
+            'list' => $res['data']['openid'],
             'next_id' => isset($res['next_openid']) ? $res['next_openid'] : NULL
         ) : NULL;
     }
@@ -741,7 +715,7 @@ class WeChatClient {
     public function getOAuthConnectUri($redirect_uri, $state = '', $scope = 'snsapi_base')
     {
         $redirect_uri = urlencode($redirect_uri);
-        $url          = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={$this->_appid}&redirect_uri={$redirect_uri}&response_type=code&scope={$scope}&state={$state}#wechat_redirect";
+        $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={$this->_appid}&redirect_uri={$redirect_uri}&response_type=code&scope={$scope}&state={$state}#wechat_redirect";
 
         return $url;
     }
@@ -830,11 +804,11 @@ class WeChatClient {
     {
         $access_token = $this->getAccessToken();
 
-        $scene_id   = isset($options['scene_id']) ? (int)$options['scene_id'] : 0;
-        $expire     = isset($options['expire']) ? (int)$options['expire'] : 0;
+        $scene_id = isset($options['scene_id']) ? (int)$options['scene_id'] : 0;
+        $expire = isset($options['expire']) ? (int)$options['expire'] : 0;
         $ticketOnly = isset($options['ticketOnly']) ? $options['ticketOnly'] : 1;
 
-        $url  = self::$_URL_API_ROOT . "/cgi-bin/qrcode/create?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/cgi-bin/qrcode/create?access_token=$access_token";
         $data = array(
             'action_name' => 'QR_LIMIT_SCENE',
             'action_info' => array(
@@ -843,14 +817,12 @@ class WeChatClient {
                 )
             )
         );
-        if ($expire)
-        {
+        if ($expire) {
             $data['expire_seconds'] = $expire;
-            $data['action_name']    = 'QR_SCENE';
+            $data['action_name'] = 'QR_SCENE';
         }
 
-        if ($data['action_name'] == 'QR_LIMIT_SCENE' && $scene_id > 100000)
-        {
+        if ($data['action_name'] == 'QR_LIMIT_SCENE' && $scene_id > 100000) {
             $data['action_info']['scene']['scene_id'] = self::$_QRCODE_TICKET_DEFAULT_ID;
         }
 
@@ -859,8 +831,7 @@ class WeChatClient {
         $res = self::post($url, $data);
         $res = json_decode($res, TRUE);
 
-        if (self::checkIsSuc($res))
-        {
+        if (self::checkIsSuc($res)) {
             return $ticketOnly ? $res['ticket'] : array(
                 'ticket' => $res['ticket'],
                 'expire' => $res['expire_seconds']
@@ -873,22 +844,23 @@ class WeChatClient {
     /**
      * 获取所有上架商品
      */
-    public function getOnlineProduct(){
+    public function getOnlineProduct()
+    {
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/merchant/getbystatus?access_token=$access_token";
+        $url = self::$_URL_API_ROOT . "/merchant/getbystatus?access_token=$access_token";
 
         $json = json_encode(
             array(
-                'status'  => 1
+                'status' => 1
             )
         );
 
         $res = self::post($url, $json);
 
         $res = json_decode($res, true);
-        if($this->checkIsSuc($res)){
+        if ($this->checkIsSuc($res)) {
             return $res['products_info'];
-        }else{
+        } else {
             throw new \Exception($this->error(), self::$ERROR_NO);
         }
     }
